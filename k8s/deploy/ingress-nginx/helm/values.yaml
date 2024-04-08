@@ -1,0 +1,10 @@
+controller:
+  service:
+    type: NodePort
+    nodePorts:
+       http: 30080
+       https: 30443
+  config:
+    pid: "/tmp/nginx/ingress_nginx.pid"
+    "compute-full-forwarded-for": true
+    "use-forwarded-headers": true

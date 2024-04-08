@@ -1,0 +1,36 @@
+[all]
+%{for index, obj in k8s_hosts.master_hosts}
+${obj["name"]} ansible_host=${obj["network_interface"][0]["ip_address"]} etcd_member_name=etcd${index+1} ansible_user=timur
+%{endfor}
+%{for obj in k8s_hosts.node_hosts}
+${obj["name"]} ansible_host=${obj["network_interface"][0]["ip_address"]} ansible_user=timur
+%{endfor}
+
+[bastion]
+bastion ansible_host=${k8s_hosts.bastion_nat_ip} ansible_user=timur
+
+[kube_control_plane]
+%{for obj in k8s_hosts.master_hosts}
+${obj["name"]}
+%{endfor}
+
+[etcd]
+%{for obj in k8s_hosts.master_hosts}
+${obj["name"]}
+%{endfor}
+
+[kube_node]
+%{for obj in k8s_hosts.node_hosts}
+${obj["name"]}
+%{endfor}
+
+[kube_node:vars]
+ansible_ssh_common_args='-o ProxyCommand="ssh -p 22 -W %h:%p -q timur@${k8s_hosts.bastion_nat_ip}"'
+
+
+[calico_rr]
+
+[k8s_cluster:children]
+kube_control_plane
+kube_node
+calico_rr

@@ -1,0 +1,10 @@
+apiVersion: qbec.io/v1alpha1
+kind: App
+metadata:
+  name: kube-prometheus
+spec:
+  environments:
+    default:
+      defaultNamespace: monitoring
+      server: https://localhost:8001
+  vars: {}

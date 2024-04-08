@@ -1,0 +1,12 @@
+---
+- hosts: k8s-node-0
+  tasks:
+  - name: Create jenkins-backup directory
+    become: yes
+    ansible.builtin.file:
+      path: /data/jenkins/backup
+      state: directory
+      mode: '0755'
+      owner: '1000'
+      group: '1000'
+ 
