@@ -32,8 +32,8 @@ logLevel: ""
 
 github:
   user: gizadirov
-  token: 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
-  secret: mrrpmunovkszqkwmlnphzpoeddtrinsgouhxjgzxhygdumkztipexcwmybpyocawxrbvrdgzqxkoylgrnjyobisrgcpciqllyobofaabcuzgvreemxmairnqihfntutc
+  token: xxx
+  secret: xxx
 #   hostname: github.your.org
 
 # -- If using a GitHub App, please enter your values as follows.
