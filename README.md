@@ -139,7 +139,15 @@
 6. Ссылка на тестовое приложение и веб интерфейс Grafana с данными доступа.
 7. Все репозитории рекомендуется хранить на одном ресурсе (github, gitlab)
 
+[app repo](https://github.com/gizadirov/netology-diploma-app)  
+[site](https://netology.timurkin.ru/)  
 
-Jenkins:
-u: jenkins-operator
-p: db4LIalqyJ8PZONygxkS
+Jenkins:  
+u: jenkins-operator  
+p: db4LIalqyJ8PZONygxkS  
+  
+Grafana:  
+u: admin  
+p: admin  
+
+
