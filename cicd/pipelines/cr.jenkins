@@ -1,0 +1,55 @@
+#!/usr/bin/env groovy
+
+def label = "k8s-${UUID.randomUUID().toString()}"
+def home = "/home/jenkins"
+def workspace = "${home}/workspace/build-jenkins-operator"
+def workdir = "${workspace}/src/github.com/jenkinsci/kubernetes-operator/"
+
+podTemplate(yaml: '''
+        apiVersion: v1
+        kind: Pod
+        spec:
+          containers:
+          - name: dind
+            image: docker:latest
+            securityContext:
+              privileged: true
+            volumeMounts:
+              - name: dind-storage
+                mountPath: /var/lib/docker
+          volumes:
+            - name: dind-storage
+              emptyDir: {}
+'''){
+    node(label) {
+        environment {
+            REGISTRY = 'cr.yandex/crp0c81tkbq1dub8dc8c/'
+            IMAGE_NAME = 'app'
+            LABEL = 'latest'
+        }
+        stages {
+            stage('Checkout from github repo') {
+                steps {
+                    git branch: 'main', url: 'https://github.com/gizadirov/netology-diploma-app'
+                }
+            }   
+
+            stage('Build and Push Docker Image') {
+                steps {
+                    container('dind') {
+                        script {
+                            // Сборка Docker-образа
+                            docker.build("${env.REGISTRY}${env.IMAGE_NAME}:${env.LABEL}")
+
+                            // Пушим Docker-образ в Docker Registry
+                            docker.withRegistry("https://${env.REGISTRY}", 'cr_yandex') {
+                                // Пушим образ с тегом "latest"
+                                docker.image("${env.REGISTRY}${env.IMAGE_NAME}:${env.LABEL}").push(env.LABEL)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

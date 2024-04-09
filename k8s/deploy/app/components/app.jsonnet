@@ -7,9 +7,9 @@ local params = p.components.app;
 
 local imageTag = std.extVar('imageTag');
 
-local dockerConfig = importstr "../../../.secrets/dockerconfig.json";
-local tlsCert = importstr "../../../.secrets/netology.timurkin.ru.crt";
-local tlsKey = importstr "../../../.secrets/netology.timurkin.ru.key";
+local dockerConfig = importstr "../../../../.secrets/dockerconfig.json";
+local tlsCert = importstr "../../../../.secrets/netology.timurkin.ru.crt";
+local tlsKey = importstr "../../../../.secrets/netology.timurkin.ru.key";
 
 [
   {

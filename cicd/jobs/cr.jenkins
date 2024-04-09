@@ -1,0 +1,31 @@
+#!/usr/bin/env groovy
+
+pipelineJob('k8s-e2e') {
+    displayName('Build and push to container registry')
+
+    logRotator {
+        numToKeep(10)
+        daysToKeep(30)
+    }
+
+    configure { project ->
+        project / 'properties' / 'org.jenkinsci.plugins.workflow.job.properties.DurabilityHintJobProperty' {
+            hint('PERFORMANCE_OPTIMIZED')
+        }
+    }
+
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    remote {
+                        url('https://github.com/gizadirov/netology-diploma.git')
+                        #credentials('jenkins-operator')
+                    }
+                    branches('*/main')
+                }
+            }
+            scriptPath('cicd/pipelines/cr.jenkins')
+        }
+    }
+}

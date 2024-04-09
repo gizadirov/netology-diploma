@@ -140,4 +140,6 @@
 7. Все репозитории рекомендуется хранить на одном ресурсе (github, gitlab)
 
 
-
+Jenkins:
+u: jenkins-operator
+p: db4LIalqyJ8PZONygxkS

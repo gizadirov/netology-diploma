@@ -9,4 +9,14 @@
       mode: '0755'
       owner: '1000'
       group: '1000'
- 
+
+- hosts: k8s-node-1
+  tasks:
+  - name: Create grafana directory
+    become: yes
+    ansible.builtin.file:
+      path: /data/grafana
+      state: directory
+      mode: '0755'
+      owner: '1000'
+      group: '1000'
