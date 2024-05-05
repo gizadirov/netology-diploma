@@ -35,7 +35,7 @@ pipeline {
                     value: '$.ref',
                     expressionType: 'JSONPath']
                 ],
-                token: "",
+                tokenCredentialId: 'webhook_token',
                 printContributedVariables: true,
                 printPostContent: true,
                 regexpFilterText: '$tagString',
@@ -46,10 +46,12 @@ pipeline {
         REGISTRY = 'cr.yandex/crp0c81tkbq1dub8dc8c/'
         IMAGE_NAME = 'app'
         TAG = "${params.tagString}"
+        KUBECONFIG = '/root/.kube/config'
     }
     stages {
         stage('Checkout from github repo') {
             steps {
+                
                 checkout scm: [$class: 'GitSCM', userRemoteConfigs: [[url: 'https://github.com/gizadirov/netology-diploma-app' ]], branches: [[name: "refs/tags/${env.TAG}"]]], poll: false
             }
         }   
@@ -75,9 +77,11 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/gizadirov/netology-diploma'
                 container('k8s-tools') {
                     withCredentials([file(credentialsId: 'kube_cred', variable: 'KUBECRED')]) {
+                   
+                        
                         sh 'mkdir ~/.kube'
                         sh 'cat $KUBECRED > ~/.kube/config'
-                        sh "qbec apply default --vm:ext-str imageTag=${env.TAG} --root k8s/deploy/app --yes"
+                        sh "qbec apply jenkins --vm:ext-str imageTag=${env.TAG} --root k8s/deploy/app --yes"
                     }
                 }
             }
