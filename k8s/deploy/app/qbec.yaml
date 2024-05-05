@@ -10,4 +10,6 @@ spec:
     jenkins:
       defaultNamespace: app
       server: https://kubernetes.default.svc.cluster.local:443
+      excludes: # additional components to exclude
+      - other
   vars: {}
