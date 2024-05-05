@@ -6,5 +6,8 @@ spec:
   environments:
     default:
       defaultNamespace: app
-      # server: https://localhost:8001
+      server: https://localhost:8001
+    jenkins:
+      defaultNamespace: app
+      server: https://kubernetes.default.svc.cluster.local:443
   vars: {}
