@@ -1,7 +1,0 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-
-resources:
-- ./kube-prometheus/kustomization.yaml
-- grafana_local_pv_patch.yaml
-- grafana_node_affinity_patch.yaml

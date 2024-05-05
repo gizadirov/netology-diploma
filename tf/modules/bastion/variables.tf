@@ -19,7 +19,7 @@ variable "disk" {
 
 variable "preemptible" {
   type        = bool
-  default     = true
+  default     = false
   description = "Прерываемая"
 }
 

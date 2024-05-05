@@ -1,0 +1,27 @@
+---
+- hosts: kube_node
+  tasks:
+  - name: Create pv-0
+    become: yes
+    ansible.builtin.file:
+      path: /data/pv-0
+      state: directory
+      mode: '0755'
+      owner: '1000'
+      group: '1000'
+  - name: Create pv-1
+    become: yes
+    ansible.builtin.file:
+      path: /data/pv-1
+      state: directory
+      mode: '0755'
+      owner: '1000'
+      group: '1000'
+  - name: Create pv-2
+    become: yes
+    ansible.builtin.file:
+      path: /data/pv-2
+      state: directory
+      mode: '0755'
+      owner: '1000'
+      group: '1000'

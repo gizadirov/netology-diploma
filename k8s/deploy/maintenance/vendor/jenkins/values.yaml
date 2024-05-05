@@ -1,0 +1,5 @@
+jenkins:
+  configuration:
+    configurationAsCode:
+      - configMapName: testcmn
+        content: testcontent

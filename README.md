@@ -2,11 +2,11 @@
 [site](https://netology.timurkin.ru/)  
 
 Jenkins:  
-u: jenkins-operator  
-p: db4LIalqyJ8PZONygxkS  
+u: admin  
+p: netology  
   
 Grafana:  
 u: admin  
-p: admin  
+p: netology  
 
 

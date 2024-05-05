@@ -1,6 +1,5 @@
 local env = {
   name: std.extVar("qbec.io/env"),
-  namespace: "monitoring",
 };
 local p = import "../params.libsonnet";
 local params = p.components.monitoring;
@@ -17,7 +16,7 @@ local tlsKey = importstr "../../../../.secrets/netology.timurkin.ru.key";
     kind: "PersistentVolumeClaim",
     metadata: {
       name: "grafana-pvc",
-      namespace: env.namespace,
+      namespace: params.ns,
     },
     spec: {
       accessModes: [
@@ -28,11 +27,7 @@ local tlsKey = importstr "../../../../.secrets/netology.timurkin.ru.key";
           storage: "5Gi",
         },
       },
-      selector: {
-        matchLabels: {
-          "app.kubernetes.io/component": "grafana",
-        },
-      },
+      storageClassName: "local-storage",
     },
   },
   {
@@ -45,8 +40,8 @@ local tlsKey = importstr "../../../../.secrets/netology.timurkin.ru.key";
         "app.kubernetes.io/part-of": "kube-prometheus",
         "app.kubernetes.io/version": "9.0.1",
       },
-      name: params.name,
-      namespace: env.namespace,
+      name: params.name + "-ingress",
+      namespace: params.ns,
     },
     spec: {
       egress: [
@@ -55,12 +50,22 @@ local tlsKey = importstr "../../../../.secrets/netology.timurkin.ru.key";
       ],
       ingress: [
         {
-          ports: [
+          from: [
             {
-              port: params.servicePort,
-              protocol: "TCP",
+              namespaceSelector:
+                {
+                  matchLabels: {
+                    "kubernetes.io/metadata.name": "ingress-nginx",
+                  },
+                },
             },
           ],
+          ports: [
+            {
+              port: 3000,
+              protocol: "TCP",
+            }
+          ]
         },
       ],
       podSelector: {
@@ -81,7 +86,7 @@ local tlsKey = importstr "../../../../.secrets/netology.timurkin.ru.key";
     kind: "Secret",
     metadata: {
       name: params.tlsSecretName,
-      namespace: env.namespace,
+      namespace: params.ns,
     },
     data: {
       "tls.crt": std.base64(tlsCert),
@@ -99,7 +104,7 @@ local tlsKey = importstr "../../../../.secrets/netology.timurkin.ru.key";
       },
       labels: { app: params.name },
       name: params.name + "-ingress",
-      namespace: env.namespace,
+      namespace: params.ns,
     },
     spec: {
       ingressClassName: params.ingressClass,

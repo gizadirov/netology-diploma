@@ -16,14 +16,6 @@ pipelineJob('push_to_cr') {
 
     definition {
         cpsScm {
-            scm {
-                git {
-                    remote {
-                        url('https://github.com/gizadirov/netology-diploma.git')
-                    }
-                    branches('*/main')
-                }
-            }
             scriptPath('cicd/pipelines/cr.jenkins')
         }
     }

@@ -82,14 +82,14 @@ variable "node_resources" {
   type = map(any)
   default = {
     cores         = 2
-    memory        = 3
+    memory        = 4
     core_fraction = 5
   }
 }
 
 variable "node_preemptible" {
   type        = bool
-  default     = true
+  default     = false
   description = "Прерываемая"
 }
 

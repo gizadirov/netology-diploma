@@ -1,17 +1,16 @@
 #!/usr/bin/env groovy
 
-def label = "k8s-${UUID.randomUUID().toString()}"
-def home = "/home/jenkins"
-def workspace = "${home}/workspace/build-jenkins-operator"
-def workdir = "${workspace}/src/github.com/jenkinsci/kubernetes-operator/"
-
-podTemplate(yaml: '''
+pipeline {
+    agent {
+        kubernetes {
+            yaml '''
         apiVersion: v1
         kind: Pod
         spec:
           containers:
-          - name: dind
+          - name: docker
             image: docker:latest
+            imagePullPolicy: IfNotPresent
             securityContext:
               privileged: true
             volumeMounts:
@@ -23,46 +22,62 @@ podTemplate(yaml: '''
           volumes:
             - name: dind-storage
               emptyDir: {}
-'''){
-    node(label) {
-        environment {
-            REGISTRY = 'cr.yandex/crp0c81tkbq1dub8dc8c/'
-            IMAGE_NAME = 'app'
-            LABEL = env.BRANCH_NAME
+        '''
         }
-        stages {
-            stage('Checkout from github repo') {
-                steps {
-                    git branch: env.BRANCH_NAME, url: 'https://github.com/gizadirov/netology-diploma-app'
-                }
-            }   
+    }
+    parameters {
+        string(name: 'tagString', defaultValue: 'v0.0.1', description: 'Tag vX.X.X')
+    }
+    triggers {
+        GenericTrigger(
+            genericVariables: [
+                [key: 'tagString',
+                    value: '$.ref',
+                    expressionType: 'JSONPath']
+                ],
+                token: "",
+                printContributedVariables: true,
+                printPostContent: true,
+                regexpFilterText: '$tagString',
+                regexpFilterExpression: 'v\\d+\\.\\d+\\.\\d+'
+        )
+    }
+    environment {
+        REGISTRY = 'cr.yandex/crp0c81tkbq1dub8dc8c/'
+        IMAGE_NAME = 'app'
+        TAG = "${params.tagString}"
+    }
+    stages {
+        stage('Checkout from github repo') {
+            steps {
+                checkout scm: [$class: 'GitSCM', userRemoteConfigs: [[url: 'https://github.com/gizadirov/netology-diploma-app' ]], branches: [[name: "refs/tags/${env.TAG}"]]], poll: false
+            }
+        }   
 
-            stage('Build and Push Docker Image') {
-                steps {
-                    container('dind') {
-                        script {
-                            // Сборка Docker-образа
-                            docker.build("${env.REGISTRY}${env.IMAGE_NAME}:${env.LABEL}")
+        stage('Build and Push Docker Image') {
+            steps {
+                container('docker') {
+                    script {
+                        // Сборка Docker-образа
+                        docker.build("${env.REGISTRY}${env.IMAGE_NAME}:${env.TAG}")
 
-                            // Пушим Docker-образ в Docker Registry
-                            docker.withRegistry("https://${env.REGISTRY}", 'cr_yandex') {
-                                // Пушим образ с тегом "latest"
-                                docker.image("${env.REGISTRY}${env.IMAGE_NAME}:${env.LABEL}").push(env.LABEL)
-                            }
+                        // Пушим Docker-образ в Docker Registry
+                        docker.withRegistry("https://${env.REGISTRY}", 'cr_yandex') {
+                            docker.image("${env.REGISTRY}${env.IMAGE_NAME}:${env.TAG}").push(env.TAG)
                         }
                     }
                 }
             }
+        }
 
-            stage('Deploy to Kubernetes') {
-                steps {
-                    git branch: 'main', url: 'https://github.com/gizadirov/netology-diploma'
-                    container('k8s-tools') {
-                        withCredentials([file(credentialsId: 'kube_cred', variable: 'KUBECONFIG')]) {
-                            sh 'mkdir .kube'
-                            sh "echo $KUBECONFIG > .kube/config"
-                            sh "qbec apply default --vm:ext-str imageTag=${env.LABEL} --root k8s/deploy/app --yes"
-                        }
+        stage('Deploy to Kubernetes') {
+            steps {
+                git branch: 'main', url: 'https://github.com/gizadirov/netology-diploma'
+                container('k8s-tools') {
+                    withCredentials([file(credentialsId: 'kube_cred', variable: 'KUBECRED')]) {
+                        sh 'mkdir ~/.kube'
+                        sh 'cat $KUBECRED > ~/.kube/config'
+                        sh "qbec apply default --vm:ext-str imageTag=${env.TAG} --root k8s/deploy/app --yes"
                     }
                 }
             }

@@ -11,6 +11,9 @@ jenkins:
       version: "1.37.0"
     - name: generic-webhook-trigger
       version: "1.88.3"
+    - name: configuration-as-code
+      version: "1775.v810dc950b_514"
+      
   seedJobs:
     - id: jenkins-operator
       targets: "cicd/jobs/*.jenkins"

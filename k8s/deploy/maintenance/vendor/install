@@ -1,0 +1,32 @@
+#!/bin/bash
+
+if [ -f .installed ]; then
+    exit 0
+fi
+
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo add runatlantis https://runatlantis.github.io/helm-charts
+helm repo add jenkins https://raw.githubusercontent.com/jenkinsci/kubernetes-operator/master/chart
+
+helm repo update
+
+mkdir -p {ingress-nginx,atlantis,jenkins,../components/monitoring_kp}
+
+helm pull ingress-nginx/ingress-nginx -d ingress-nginx --version 4.10.0
+helm pull runatlantis/atlantis -d atlantis --version 4.25.0
+helm pull jenkins/jenkins-operator -d jenkins --version 0.8.0
+
+repo_url="https://github.com/prometheus-operator/kube-prometheus"
+clone_dir="kube-prometheus"
+
+if [ -d "$clone_dir/.git" ]; then
+    cd "$clone_dir"
+    git fetch
+    cd ..
+else
+   git clone --branch v0.13.0 --depth=1 https://github.com/prometheus-operator/kube-prometheus
+fi
+
+kustomize build . > ../components/monitoring_kp/index.yaml
+
+touch .installed

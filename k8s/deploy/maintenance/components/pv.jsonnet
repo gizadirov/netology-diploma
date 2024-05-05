@@ -19,6 +19,7 @@ local p = import "../params.libsonnet";
         "ReadWriteOnce",
       ],
       persistentVolumeReclaimPolicy: "Retain",
+      storageClassName: "local-storage",
       "local": {
         path: "/data/pv-0",
       },
@@ -56,6 +57,7 @@ local p = import "../params.libsonnet";
         "ReadWriteOnce",
       ],
       persistentVolumeReclaimPolicy: "Retain",
+      storageClassName: "local-storage",
       "local": {
         path: "/data/pv-1",
       },
@@ -93,6 +95,7 @@ local p = import "../params.libsonnet";
         "ReadWriteOnce",
       ],
       persistentVolumeReclaimPolicy: "Retain",
+      storageClassName: "local-storage",
       "local": {
         path: "/data/pv-2",
       },
@@ -130,6 +133,7 @@ local p = import "../params.libsonnet";
         "ReadWriteOnce",
       ],
       persistentVolumeReclaimPolicy: "Retain",
+      storageClassName: "local-storage",
       "local": {
         path: "/data/pv-0",
       },
@@ -167,6 +171,7 @@ local p = import "../params.libsonnet";
         "ReadWriteOnce",
       ],
       persistentVolumeReclaimPolicy: "Retain",
+      storageClassName: "local-storage",
       "local": {
         path: "/data/pv-1",
       },
@@ -204,6 +209,7 @@ local p = import "../params.libsonnet";
         "ReadWriteOnce",
       ],
       persistentVolumeReclaimPolicy: "Retain",
+      storageClassName: "local-storage",
       "local": {
         path: "/data/pv-2",
       },
@@ -225,5 +231,14 @@ local p = import "../params.libsonnet";
         },
       },
     },
+  },
+  {
+    apiVersion: "storage.k8s.io/v1",
+    kind: "StorageClass",
+    metadata: {
+      name: "local-storage",
+    },
+    provisioner: "kubernetes.io/no-provisioner",
+    volumeBindingMode: "WaitForFirstConsumer",
   },
 ]

@@ -6,10 +6,11 @@ resource "yandex_vpc_address" "static_addr" {
   }
 }
 resource "yandex_compute_instance" "bastion" {
-  depends_on  = [yandex_vpc_address.static_addr]
-  name        = var.name
-  platform_id = var.platform_id
-  zone        = var.zone
+  depends_on                = [yandex_vpc_address.static_addr]
+  name                      = var.name
+  platform_id               = var.platform_id
+  zone                      = var.zone
+  allow_stopping_for_update = true
   resources {
     cores         = var.resources.cores
     memory        = var.resources.memory

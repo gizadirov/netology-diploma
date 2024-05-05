@@ -1,12 +1,17 @@
 local env = {
   name: std.extVar("qbec.io/env"),
-  namespace: "jenkins",
 };
+
+local expandHelmTemplate = std.native("expandHelmTemplate");
+
+
 local p = import "../params.libsonnet";
 local params = p.components.jenkins;
 
 local tlsCert = importstr "../../../../.secrets/netology.timurkin.ru.crt";
 local tlsKey = importstr "../../../../.secrets/netology.timurkin.ru.key";
+local jenkins_conf = importstr "../../../../.secrets/jenkins.yaml";
+
 
 [
   {
@@ -48,10 +53,17 @@ local tlsKey = importstr "../../../../.secrets/netology.timurkin.ru.key";
   },
   {
     apiVersion: "v1",
+    kind: "Namespace",
+    metadata: {
+      name: params.ns,
+    },
+  },
+  {
+    apiVersion: "v1",
     kind: "Secret",
     metadata: {
       name: params.tlsSecretName,
-      namespace: env.namespace,
+      namespace: params.ns,
     },
     data: {
       "tls.crt": std.base64(tlsCert),
@@ -69,7 +81,7 @@ local tlsKey = importstr "../../../../.secrets/netology.timurkin.ru.key";
       },
       labels: { app: params.name },
       name: params.name + "-ingress",
-      namespace: env.namespace,
+      namespace: params.ns,
     },
     spec: {
       ingressClassName: params.ingressClass,
@@ -102,4 +114,41 @@ local tlsKey = importstr "../../../../.secrets/netology.timurkin.ru.key";
       ],
     },
   },
+  // {
+  //   apiVersion: "v1",
+  //   kind: "ConfigMap",
+  //   metadata: {
+  //     name: "jenkins-operator-user-configuration",
+  //   },
+  //   data: {
+  //     "my-jenkins-configuration": jenkins_conf,
+  //   },
+  // },
+  expandHelmTemplate(
+    "../vendor/jenkins/jenkins-operator-0.8.0.tgz",
+    params.values,
+    {
+      nameTemplate: params.name,
+      namespace: "default",  //params.ns,
+      thisFile: std.thisFile,
+      verbose: true,
+    }
+  ),
+  // {
+  //   apiVersion: "jenkins.io/v1alpha2",
+  //   kind: "Jenkins",
+  //   metadata: {
+  //     name: "apply-jenkins-conf",
+  //     namespace: params.ns,
+  //   },
+  //   spec: {
+  //     configurationAsCode: {
+  //       configurations: [
+  //         {
+  //           name: "jenkins-operator-user-configuration",
+  //         },
+  //       ],
+  //     },
+  //   },
+  // },
 ]

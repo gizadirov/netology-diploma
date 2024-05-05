@@ -16,14 +16,6 @@ pipelineJob('k8s-deploy') {
 
     definition {
         cpsScm {
-            scm {
-                git {
-                    remote {
-                        url('https://github.com/gizadirov/netology-diploma.git')
-                    }
-                    branches('*/main')
-                }
-            }
             scriptPath('cicd/pipelines/k8s.jenkins')
         }
     }

@@ -4,3 +4,6 @@
 [submodule "k8s/deploy/maintenance/components/kube-prometheus/kube-prometheus"]
 	path = k8s/deploy/maintenance/components/kube-prometheus/kube-prometheus
 	url = https://github.com/prometheus-operator/kube-prometheus
+[submodule "k8s/deploy/maintenance/vendor/kube-prometheus"]
+	path = k8s/deploy/maintenance/vendor/kube-prometheus
+	url = https://github.com/prometheus-operator/kube-prometheus
