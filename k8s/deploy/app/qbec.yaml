@@ -6,5 +6,5 @@ spec:
   environments:
     default:
       defaultNamespace: app
-      server: https://localhost:8001
+      # server: https://localhost:8001
   vars: {}
