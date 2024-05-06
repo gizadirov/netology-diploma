@@ -125,16 +125,17 @@ local jenkinsConfig = importstr "../../../../.secrets/jenkins.yaml";
             },
           },
           configuration: {
-            configurationAsCode: [
-                {
-                  configMapName: 'jenkins-config',
-                  content: 
-                  {
-                    fullConfig: jenkinsConfig
-                  }
-                }
+            // configurationAsCode: [
+            //     {
+            //       configMapName: 'jenkins-config',
+            //       content: {
+            //         "1-creds":"""
+  
+            //         """
+            //       }
+            //     }
                 
-            ],
+            // ],
             // secretData: {
             //   user: std.base64('admin'),
             //   password: std.base64('netology'),
