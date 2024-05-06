@@ -25,9 +25,15 @@ pipeline {
     }
     triggers {
         GenericTrigger(
+                genericVariables: [[key: 'branchString',
+                    value: '$.ref',
+                    expressionType: 'JSONPath'
+                ]],
                 tokenCredentialId: 'webhook_token',
                 printContributedVariables: true,
                 printPostContent: true,
+                regexpFilterText: '$branchString',
+                regexpFilterExpression: 'refs/heads/main'
         )
     }
     environment {
